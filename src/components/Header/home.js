@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-
+import Icon from 'react-native-vector-icons/AntDesign';
 export default function HomeHeader(props) {
   const openDrawer = () => {
     props.navigation.openDrawer();
@@ -8,10 +8,10 @@ export default function HomeHeader(props) {
   return (
     <View style={styles.header}>
       <TouchableOpacity onPress={openDrawer}>
-        <Text>HMBRGR</Text>
+        <Icon size={30} name="menuunfold" />
       </TouchableOpacity>
       <View>
-        <Text>MSG</Text>
+        <Icon size={30} name="mail" />
       </View>
     </View>
   );
@@ -23,5 +23,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 15,
+    backgroundColor: 'transparent',
   },
 });

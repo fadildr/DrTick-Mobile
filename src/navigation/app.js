@@ -9,6 +9,7 @@ const Drawer = createDrawerNavigator();
 
 import Home from '../screen/Home';
 import Detail from '../screen/Detail';
+import Order from '../screen/Order';
 
 import Profile from '../screen/Profile';
 
@@ -59,6 +60,11 @@ export default function AppStackNavigator() {
       <Stack.Screen
         name="Detail"
         component={Detail}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Order"
+        component={Order}
         options={{headerShown: false}}
       />
       {/* ORDER */}

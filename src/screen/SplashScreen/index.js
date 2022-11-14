@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Image} from 'react-native';
 
 export default function SplashScreen(props) {
   console.log(props);
@@ -19,10 +19,19 @@ export default function SplashScreen(props) {
   };
 
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text>Splash Screen</Text>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#3366FF',
+      }}>
+      <Image
+        source={require('../../assets/doll.png')}
+        style={{width: '100%', height: '100%'}}
+      />
     </View>
   );
 }
-
+// AppRegistry.registerComponent('checkToken', () => SplashScreen);
 const style = StyleSheet.create({});
