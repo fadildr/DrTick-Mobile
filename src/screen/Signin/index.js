@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,13 +8,31 @@ import {
   // Linking,
   Image,
 } from 'react-native';
+import axios from '../../utils/axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // import Icon from 'react-native-vector-icons/AntDesign';
 // import {Input} from '@rneui/themed';
 import {TextInput} from 'react-native-paper';
 export default function Signin(props) {
-  const [text, setText] = useState('');
-  const handleLogin = () => {
-    props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
+  const [form, setForm] = useState({});
+  const handleChangeForm = (value, name) => {
+    setForm({...form, [name]: value});
+  };
+  const handleLogin = async () => {
+    try {
+      console.log(form);
+      const result = await axios.post('auth/login', form);
+      console.log(result);
+      await AsyncStorage.setItem('userId', result.data.data.userId);
+      await AsyncStorage.setItem('token', result.data.data.token);
+      await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
+      alert(result.data.msg);
+      props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
+    } catch (error) {
+      console.log(error);
+      alert(error.response.data.msg);
+    }
   };
 
   return (
@@ -23,14 +41,19 @@ export default function Signin(props) {
         <Text style={styles.titleAuth}>Signin </Text>
         <Text style={styles.descAuth}>Hi, Welcome back to Urticket! </Text>
 
-        <TextInput label="Username" style={styles.inputAuth} />
-        <TextInput label="Email" style={styles.inputAuth} />
+        {/* <TextInput label="Username" style={styles.inputAuth} /> */}
+        <TextInput
+          label="Email"
+          style={styles.inputAuth}
+          onChangeText={text => handleChangeForm(text, 'email')}
+        />
         {/* <Icon color="red" size={30} name="" /> */}
         <TextInput
           style={styles.inputAuth}
           label="Password"
           secureTextEntry
           right={<TextInput.Icon icon="eye" color="blue" />}
+          onChangeText={text => handleChangeForm(text, 'password')}
         />
         <Text style={{color: '#3366FF', textAlign: 'right'}}>
           Forgot Password?
@@ -38,7 +61,14 @@ export default function Signin(props) {
 
         {/* <Text style={styles.descAuth}>Hi, Welcome back to Urticket! </Text> */}
 
-        <TouchableOpacity style={styles.buttonSignin} onPress={handleLogin}>
+        <TouchableOpacity
+          style={styles.buttonSignin}
+          onPress={handleLogin}
+          disabled={
+            !form.email || !form.password || form.password.length < 8
+              ? true
+              : false
+          }>
           <Text style={{color: 'white', textAlign: 'center'}}>Login</Text>
         </TouchableOpacity>
         <Text>

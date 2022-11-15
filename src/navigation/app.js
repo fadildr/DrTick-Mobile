@@ -12,6 +12,8 @@ import Detail from '../screen/Detail';
 import Order from '../screen/Order';
 
 import Profile from '../screen/Profile';
+import EditProfile from '../screen/EditProfile';
+import ChangePassword from '../screen/ChangePassword';
 
 import DrawerContent from '../components/DrawerContent';
 import HeaderHome from '../components/Header/home';
@@ -65,6 +67,16 @@ export default function AppStackNavigator() {
       <Stack.Screen
         name="Order"
         component={Order}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePassword}
         options={{headerShown: false}}
       />
       {/* ORDER */}

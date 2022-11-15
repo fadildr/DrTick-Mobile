@@ -1,4 +1,5 @@
-import React from 'react';
+import axios from 'axios';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -13,6 +14,18 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import HeaderDetail from '../../components/Header/detail';
 export default function Home(props) {
   const handleBuy = () => props.navigation.navigate('Order');
+  useEffect(() => {
+    getEventById();
+  }, []);
+  // const id = ;
+  const getEventById = async () => {
+    try {
+      const result = await axios.get(`event/${props.route.params.eventId}`);
+      console.log(result);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
   return (
     <View>
       <HeaderDetail {...props} />

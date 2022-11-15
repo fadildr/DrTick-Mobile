@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,16 +7,51 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  FlatList,
 } from 'react-native';
+import axios from '../../utils/axios';
+// import checkStorage from '../../utils/checkAsyncStorage';
 // import {TextInput} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/AntDesign';
 export default function Home(props) {
-  const navDetail = () => props.navigation.navigate('Detail');
+  const [form, setForm] = useState({});
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    // checkStorage();
+    // getUserId();
+    getData();
+  }, []);
+  const navDetail = id => props.navigation.navigate('Detail', {eventId: id});
+  const handleChangeForm = (value, name) => {
+    setForm({...form, [name]: value});
+  };
+  const getData = async () => {
+    try {
+      const result = await axios.get('event?page=1&limit=&name=&dateTimeShow=');
+      setData(result.data.data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+  const handleSearch = () => {
+    console.log(form);
+    // alert('kwajd');
+  };
+  // console.log(data);
   return (
     <View style={styles.container}>
       <View style={styles.search}>
-        <Icon size={30} name="search1" style={{marginTop: 5}} />
-        <TextInput placeholder="Search..." />
+        <Icon
+          size={30}
+          name="search1"
+          style={{marginTop: 5}}
+          onPress={handleSearch}
+        />
+        <TextInput
+          placeholder="Search..."
+          onChangeText={text => handleChangeForm(text, 'keyword')}
+        />
       </View>
       {/* <View> */}
       <View style={styles.sortDateContainer}>
@@ -41,39 +76,56 @@ export default function Home(props) {
           <Text style={styles.date}>Tue</Text>
         </View>
       </View>
-
-      <ScrollView horizontal={true} style={styles.containerCard}>
-        <TouchableOpacity style={styles.cardEvent} onPress={navDetail}>
-          <Image
-            source={require('../../assets/doll.png')}
-            style={{width: '100%', height: '100%'}}
+      <ScrollView style={styles.containerCard}>
+        {data.length > 0 ? (
+          <FlatList
+            horizontal={true}
+            data={data}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                style={styles.cardEvent}
+                onPress={() => navDetail(item.eventId)}>
+                <Image
+                  source={require('../../assets/doll.png')}
+                  // source={require(`https://res.cloudinary.com/dxbhfz3jn/image/upload/v1664877618/${item.image}`)}
+                  style={{width: '100%', height: '100%'}}
+                />
+                <View style={styles.descCard}>
+                  <Text style={styles.dateCard}>
+                    {item.dateTimeShow.split('T')[0]}
+                  </Text>
+                  <Text style={styles.titleCard}>{item.name}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            keyExtractor={item => item.id}
           />
-          <View style={styles.descCard}>
-            <Text style={styles.dateCard}>Wed, 15 Nov, 4:00 PM</Text>
-            <Text style={styles.titleCard}>Sights & Sounds Exhibition</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.cardEvent} onPress={navDetail}>
-          <Image
-            source={require('../../assets/doll.png')}
-            style={{width: '100%', height: '100%'}}
-          />
-          <View style={styles.descCard}>
-            <Text style={styles.dateCard}>Wed, 15 Nov, 4:00 PM</Text>
-            <Text style={styles.titleCard}>Sights & Sounds Exhibition</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.cardEvent} onPress={navDetail}>
-          <Image
-            source={require('../../assets/doll.png')}
-            style={{width: '100%', height: '100%'}}
-          />
-          <View style={styles.descCard}>
-            <Text style={styles.dateCard}>Wed, 15 Nov, 4:00 PM</Text>
-            <Text style={styles.titleCard}>Sights & Sounds Exhibition</Text>
-          </View>
-        </TouchableOpacity>
+        ) : (
+          <Text>Data Not Found</Text>
+        )}
       </ScrollView>
+      {/* <ScrollView horizontal={true} style={styles.containerCard}>
+        <TouchableOpacity style={styles.cardEvent} onPress={navDetail}>
+          <Image
+            source={require('../../assets/doll.png')}
+            style={{width: '100%', height: '100%'}}
+          />
+          <View style={styles.descCard}>
+            <Text style={styles.dateCard}>Wed, 15 Nov, 4:00 PM</Text>
+            <Text style={styles.titleCard}>Sights & Sounds Exhibition</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.cardEvent} onPress={navDetail}>
+          <Image
+            source={require('../../assets/doll.png')}
+            style={{width: '100%', height: '100%'}}
+          />
+          <View style={styles.descCard}>
+            <Text style={styles.dateCard}>Wed, 15 Nov, 4:00 PM</Text>
+            <Text style={styles.titleCard}>Sights & Sounds Exhibition</Text>
+          </View>
+        </TouchableOpacity>
+      </ScrollView> */}
       {/* </View> */}
     </View>
   );
@@ -118,7 +170,7 @@ const styles = StyleSheet.create({
   },
   containerCard: {
     position: 'absolute',
-    backgroundColor: 'red',
+    backgroundColor: 'white',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     marginTop: 200,

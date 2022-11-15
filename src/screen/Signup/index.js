@@ -1,14 +1,37 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import {TextInput, Checkbox} from 'react-native-paper';
+import axios from '../../utils/axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Signup(props) {
   const [checked, setChecked] = useState(false);
-  const handleSignup = () => {
-    props.navigation.navigate('Signin');
+  const [form, setForm] = useState({});
+  const handleChangeForm = (value, name) => {
+    setForm({...form, [name]: value});
+  };
+  const handleSignup = async () => {
+    try {
+      console.log(form);
+      const result = await axios.post('auth/register', form);
+      // await AsyncStorage.setItem('userId', result.data.data.userId);
+      // await AsyncStorage.setItem('token', result.data.data.token);
+      // await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
+      alert(result.data.msg);
+      props.navigation.navigate('Signin');
+      // props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
+    } catch (error) {
+      console.log(error.response.data);
+    }
   };
 
   return (
-    <View style={{backgroundColor: 'white', height: '100%'}}>
+    <ScrollView style={{backgroundColor: 'white', height: '100%'}}>
       <View style={styles.formAuth}>
         <Text style={styles.titleAuth}>Signup </Text>
         <Text>
@@ -23,21 +46,25 @@ export default function Signup(props) {
           {/* <br /> */}
         </Text>
 
-        <TextInput label="Username" style={styles.inputAuth} />
-        <TextInput label="Email" style={styles.inputAuth} />
+        <TextInput
+          label="Username"
+          style={styles.inputAuth}
+          onChangeText={text => handleChangeForm(text, 'username')}
+        />
+        <TextInput
+          label="Email"
+          style={styles.inputAuth}
+          onChangeText={text => handleChangeForm(text, 'email')}
+        />
         {/* <Icon color="red" size={30} name="" /> */}
         <TextInput
           style={styles.inputAuth}
-          label="Password"
+          label="Password at least 8 character"
           secureTextEntry
           right={<TextInput.Icon icon="eye" color="blue" />}
+          onChangeText={text => handleChangeForm(text, 'password')}
         />
-        <TextInput
-          style={styles.inputAuth}
-          label="Confirm Password"
-          secureTextEntry
-          right={<TextInput.Icon icon="eye" color="blue" />}
-        />
+
         <View style={styles.checkboxContainer}>
           <Checkbox
             status={checked ? 'checked' : 'unchecked'}
@@ -47,13 +74,24 @@ export default function Signup(props) {
           />
           <Text style={styles.label}>Accept terms and condition</Text>
         </View>
-        <TouchableOpacity style={styles.buttonSignin} onPress={handleSignup}>
+        <TouchableOpacity
+          style={styles.buttonSignin}
+          onPress={handleSignup}
+          disabled={
+            !form.email ||
+            !form.password ||
+            !form.username ||
+            form.password.length < 8 ||
+            !checked
+              ? true
+              : false
+          }>
           <Text style={{color: 'white', textAlign: 'center'}}>Register</Text>
         </TouchableOpacity>
 
         <View />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
