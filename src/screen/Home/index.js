@@ -16,26 +16,33 @@ import Icon from 'react-native-vector-icons/AntDesign';
 export default function Home(props) {
   const [form, setForm] = useState({});
   const [data, setData] = useState([]);
-
+  const [searchName, setSearchName] = useState('');
   useEffect(() => {
     // checkStorage();
     // getUserId();
     getData();
   }, []);
+  useEffect(() => {
+    // console.log("searc is update");
+    getData();
+  }, [searchName]);
   const navDetail = id => props.navigation.navigate('Detail', {eventId: id});
   const handleChangeForm = (value, name) => {
     setForm({...form, [name]: value});
   };
   const getData = async () => {
     try {
-      const result = await axios.get('event?page=1&limit=&name=&dateTimeShow=');
+      const result = await axios.get(
+        `event?page=1&limit=&name=${searchName}&dateTimeShow=`,
+      );
       setData(result.data.data);
     } catch (error) {
       console.log(error.response);
     }
   };
   const handleSearch = () => {
-    console.log(form);
+    console.log(form.keyword);
+    setSearchName(form.keyword);
     // alert('kwajd');
   };
   // console.log(data);

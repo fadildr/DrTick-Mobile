@@ -1,5 +1,5 @@
-import axios from 'axios';
-import React, {useEffect} from 'react';
+import axios from '../../utils/axios';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import {
 import Icon from 'react-native-vector-icons/AntDesign';
 import HeaderDetail from '../../components/Header/detail';
 export default function Home(props) {
+  const [data, setData] = useState({});
   const handleBuy = () => props.navigation.navigate('Order');
   useEffect(() => {
     getEventById();
@@ -21,14 +22,18 @@ export default function Home(props) {
   const getEventById = async () => {
     try {
       const result = await axios.get(`event/${props.route.params.eventId}`);
-      console.log(result);
+      setData(result.data.data[0]);
     } catch (error) {
-      console.log(error.response);
+      console.log(error);
     }
   };
+  // console.log(data.name);
   return (
     <View>
       <HeaderDetail {...props} />
+      {/* {detail.map((item) =>(
+
+      ) */}
       <View style={styles.detailImage}>
         <Image
           source={require('../../assets/Bitmap.png')}
@@ -36,7 +41,7 @@ export default function Home(props) {
         />
 
         <View style={styles.descCard}>
-          <Text style={styles.titleCard}>Sights & Sounds Exhibition</Text>
+          <Text style={styles.titleCard}>{data.name}</Text>
           <View style={{flexDirection: 'row'}}>
             <Icon
               size={20}
@@ -44,7 +49,7 @@ export default function Home(props) {
               name="pushpino"
               style={{marginRight: 10}}
             />
-            <Text style={styles.dateCard}>Jakarta, Indonesia</Text>
+            <Text style={styles.dateCard}>{data.location}</Text>
           </View>
           <View style={{flexDirection: 'row', marginVertical: 10}}>
             <Icon
@@ -53,7 +58,10 @@ export default function Home(props) {
               name="clockcircleo"
               style={{marginRight: 10}}
             />
-            <Text style={styles.dateCard}>Wed, 15 Nov, 4:00 PM</Text>
+            <Text style={styles.dateCard}>
+              {data.dateTimeShow.split('T')[0]},
+              {data.dateTimeShow.split('T')[1]}
+            </Text>
           </View>
           <Text style={{marginVertical: 20}}>Attandees</Text>
           <Image
@@ -66,10 +74,7 @@ export default function Home(props) {
       <ScrollView style={styles.sortDateContainer}>
         <View style={{marginVertical: 15}}>
           <Text style={{fontWeight: '600', fontSize: 24}}>Event Detail</Text>
-          <Text style={{fontWeight: '400', fontSize: 16}}>
-            After his controversial art exhibition "Tear and Consume" back in
-            November 2018, in which guests were invited to tear up…
-          </Text>
+          <Text style={{fontWeight: '400', fontSize: 16}}>{data.detail}</Text>
         </View>
         <Image
           source={require('../../assets/map.png')}
