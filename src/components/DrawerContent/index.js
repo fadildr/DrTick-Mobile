@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Image} from 'react-native';
 import {
   DrawerContentScrollView,
   DrawerItem,
@@ -7,10 +7,13 @@ import {
 } from '@react-navigation/drawer';
 
 import Icon from 'react-native-vector-icons/Feather';
+import {useSelector} from 'react-redux';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function DrawerContent(props) {
+  const user = useSelector(state => state.user);
+
   const handleLogout = async () => {
     try {
       alert('Logout');
@@ -24,10 +27,31 @@ function DrawerContent(props) {
     <View style={styles.container}>
       <DrawerContentScrollView {...props}>
         <View style={styles.containerProfile}>
-          <View style={styles.avatar} />
+          <View style={styles.avatar}>
+            {user.data.image ? (
+              <Image
+                source={{
+                  uri: `https://res.cloudinary.com/dxbhfz3jn/image/upload/v1664877618/${user.data.image}`,
+                }}
+                // style={{width: '100%', height: '100%', borderRadius: 20}}
+              />
+            ) : (
+              <Icon
+                size={30}
+                color="white"
+                name="user"
+                style={{marginTop: 5, textAlign: 'center'}}
+              />
+            )}
+          </View>
           <View style={styles.biodata}>
-            <Text style={styles.title}>Anonymous</Text>
-            <Text style={styles.caption}>@bagustea</Text>
+            <Text style={styles.title}>
+              {' '}
+              {user.data.name ? user.data.name : 'anonymous'}
+            </Text>
+            <Text style={styles.caption}>
+              {user.data.username ? user.data.username : 'anonymous'}
+            </Text>
           </View>
         </View>
         <DrawerItemList {...props} />
@@ -67,9 +91,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 3,
     fontWeight: 'bold',
+    color: 'black',
   },
   caption: {
     fontSize: 14,
+    color: 'black',
     lineHeight: 14,
   },
   containerSection: {

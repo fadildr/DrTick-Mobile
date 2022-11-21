@@ -10,21 +10,20 @@ import {
   FlatList,
 } from 'react-native';
 import axios from '../../utils/axios';
-// import checkStorage from '../../utils/checkAsyncStorage';
-// import {TextInput} from 'react-native-paper';
+// import moment from 'moment';
 import Icon from 'react-native-vector-icons/AntDesign';
 export default function Home(props) {
   const [form, setForm] = useState({});
   const [data, setData] = useState([]);
+  // const [dateShow, setDateShow] = useState(moment().format('YYYY,MM,DD'));
+  // const [listDateShow, setListDateShow] = useState([]);
   const [searchName, setSearchName] = useState('');
   useEffect(() => {
-    // checkStorage();
-    // getUserId();
     getData();
   }, []);
   useEffect(() => {
-    // console.log("searc is update");
     getData();
+    // generateDate();
   }, [searchName]);
   const navDetail = id => props.navigation.navigate('Detail', {eventId: id});
   const handleChangeForm = (value, name) => {
@@ -33,19 +32,29 @@ export default function Home(props) {
   const getData = async () => {
     try {
       const result = await axios.get(
-        `event?page=1&limit=&name=${searchName}&dateTimeShow=`,
+        `event?page=1&limit=5&name=${searchName}&dateTimeShow=`,
       );
       setData(result.data.data);
     } catch (error) {
-      console.log(error.response);
+      alert(error.response.data.msg);
     }
   };
   const handleSearch = () => {
-    console.log(form.keyword);
     setSearchName(form.keyword);
-    // alert('kwajd');
   };
-  // console.log(data);
+  // const generateDate = () => {
+  //   let listDate = [
+  //     moment(dateShow).subtract(2, 'days'),
+  //     moment(dateShow).subtract(1, 'days'),
+  //     dateShow,
+  //     moment(dateShow).subtract(-1, 'days'),
+  //     moment(dateShow).subtract(-2, 'days'),
+  //   ];
+  //   setListDateShow(listDate);
+  // };
+  // const selectDate = date => {
+  //   setDateShow(date);
+  // };
   return (
     <View style={styles.container}>
       <View style={styles.search}>
@@ -82,20 +91,44 @@ export default function Home(props) {
           <Text style={styles.date}>17</Text>
           <Text style={styles.date}>Tue</Text>
         </View>
+        {/* {listDateShow.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={{margin: '0 10px'}}
+            className={index === 2 ? 'active' : ''}
+            // className="btn-date"
+            onPress={() => {
+              selectDate(moment(item).format('YYYY,MM,DD'));
+            }}>
+            <Text>{moment(item).format('DD')}</Text>
+            <Text>{moment(item).format('ddd')}</Text>
+          </TouchableOpacity>
+        ))} */}
       </View>
       <ScrollView style={styles.containerCard}>
+        <Text
+          style={{
+            fontSize: 26,
+            fontWeight: '700',
+            color: 'black',
+            marginLeft: 30,
+            marginTop: 48,
+          }}>
+          Event For You
+        </Text>
         {data.length > 0 ? (
           <FlatList
             horizontal={true}
             data={data}
-            renderItem={({item}) => (
+            renderItem={({item, index}) => (
               <TouchableOpacity
                 style={styles.cardEvent}
                 onPress={() => navDetail(item.eventId)}>
                 <Image
-                  source={require('../../assets/doll.png')}
-                  // source={require(`https://res.cloudinary.com/dxbhfz3jn/image/upload/v1664877618/${item.image}`)}
-                  style={{width: '100%', height: '100%'}}
+                  source={{
+                    uri: `https://res.cloudinary.com/dxbhfz3jn/image/upload/v1664877618/${item.image}`,
+                  }}
+                  style={{width: '100%', height: '100%', borderRadius: 30}}
                 />
                 <View style={styles.descCard}>
                   <Text style={styles.dateCard}>
@@ -108,60 +141,44 @@ export default function Home(props) {
             keyExtractor={item => item.id}
           />
         ) : (
-          <Text>Data Not Found</Text>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontSize: 20,
+              color: 'black',
+              fontWeight: 'bold',
+            }}>
+            Data Not Found
+          </Text>
         )}
       </ScrollView>
-      {/* <ScrollView horizontal={true} style={styles.containerCard}>
-        <TouchableOpacity style={styles.cardEvent} onPress={navDetail}>
-          <Image
-            source={require('../../assets/doll.png')}
-            style={{width: '100%', height: '100%'}}
-          />
-          <View style={styles.descCard}>
-            <Text style={styles.dateCard}>Wed, 15 Nov, 4:00 PM</Text>
-            <Text style={styles.titleCard}>Sights & Sounds Exhibition</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.cardEvent} onPress={navDetail}>
-          <Image
-            source={require('../../assets/doll.png')}
-            style={{width: '100%', height: '100%'}}
-          />
-          <View style={styles.descCard}>
-            <Text style={styles.dateCard}>Wed, 15 Nov, 4:00 PM</Text>
-            <Text style={styles.titleCard}>Sights & Sounds Exhibition</Text>
-          </View>
-        </TouchableOpacity>
-      </ScrollView> */}
-      {/* </View> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#3366FF'},
+  container: {flex: 1, backgroundColor: '#3366FF', padding: 0},
   search: {
     flexDirection: 'row',
     borderStyle: 'solid',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: 'white',
     borderRadius: 10,
     textAlign: 'center',
     // justifyContent: 'center',
     paddingHorizontal: 10,
     paddingVertical: 'auto',
-    marginHorizontal: 5,
+    marginHorizontal: 10,
     marginVertical: 10,
   },
   cardEvent: {
-    width: 400,
+    width: 300,
     backgroundColor: 'blue',
-    height: 600,
-    marginLeft: 20,
+    height: 400,
+    marginHorizontal: 40,
+    marginVertical: 100,
     position: 'relative',
-    borderRadius: 20,
-    marginTop: 100,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 30,
   },
   sortDateContainer: {
     backgroundColor: '#222B45',
@@ -174,6 +191,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     height: 200,
     position: 'relative',
+    // alignItems: 'center',
+    marginTop: 20,
   },
   containerCard: {
     position: 'absolute',
@@ -181,6 +200,9 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     marginTop: 200,
+    width: '100%',
+    height: '100%',
+    // backgroundColor: 'white',
   },
   card: {
     marginRight: 20,
@@ -188,13 +210,15 @@ const styles = StyleSheet.create({
     height: 600,
     borderRadius: 20,
   },
-  descCard: {zIndex: 3, position: 'absolute', marginTop: 500, marginLeft: 20},
+  descCard: {zIndex: 3, position: 'absolute', marginTop: 300, marginLeft: 20},
   dateCard: {
     fontSize: 14,
+    color: 'white',
   },
   titleCard: {
     fontSize: 22,
     fontWeight: 'bold',
+    color: 'white',
   },
   dateContainer: {alignItems: 'center'},
   date: {color: 'white'},

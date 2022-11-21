@@ -10,27 +10,28 @@ import {
 } from 'react-native';
 import axios from '../../utils/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {useDispatch} from 'react-redux';
+import {getDataUser} from '../../stores/action/user';
 // import Icon from 'react-native-vector-icons/AntDesign';
 // import {Input} from '@rneui/themed';
 import {TextInput} from 'react-native-paper';
 export default function Signin(props) {
+  const dispatch = useDispatch();
   const [form, setForm] = useState({});
   const handleChangeForm = (value, name) => {
     setForm({...form, [name]: value});
   };
   const handleLogin = async () => {
     try {
-      console.log(form);
       const result = await axios.post('auth/login', form);
-      console.log(result);
+
       await AsyncStorage.setItem('userId', result.data.data.userId);
       await AsyncStorage.setItem('token', result.data.data.token);
       await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
+      await dispatch(getDataUser(result.data.data.userId));
       alert(result.data.msg);
       props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
     } catch (error) {
-      console.log(error);
       alert(error.response.data.msg);
     }
   };

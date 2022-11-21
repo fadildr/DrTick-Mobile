@@ -1,20 +1,38 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
+import {useSelector} from 'react-redux';
 export default function Profile(props) {
+  const user = useSelector(state => state.user);
   return (
     <View style={{flex: 1, alignItems: 'center', backgroundColor: 'white'}}>
-      <Image
-        source={require('../../assets/google.png')}
-        // source={require(`https://res.cloudinary.com/dxbhfz3jn/image/upload/v1664877618/${item.image}`)}
-        style={{width: 180, height: 180, marginVertical: 30}}
-      />
+      <View style={styles.avatar}>
+        {user.data.image ? (
+          <Image
+            source={{
+              uri: `https://res.cloudinary.com/dxbhfz3jn/image/upload/v1664877618/${user.data.image}`,
+            }}
+            // style={{width: '100%', height: '100%', borderRadius: 20}}
+          />
+        ) : (
+          <Icon
+            size={50}
+            color="white"
+            name="user"
+            style={{marginTop: 20, textAlign: 'center'}}
+          />
+        )}
+      </View>
       <Text style={{color: '#373A42', fontSize: 24, fontWeight: '600'}}>
-        Jhon
+        {user.data.name ? user.data.name : 'anonymous'}
       </Text>
-      <Text>entrepener</Text>
+      <Text>{user.data.profession ? user.data.profession : 'anonymous'}</Text>
       <View style={{marginTop: 100, width: '100%'}}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            props.navigation.navigate('EditProfile');
+          }}>
           <View style={{flexDirection: 'row'}}>
             <Icon
               size={20}
@@ -67,6 +85,13 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
     alignItems: 'center',
     marginVertical: 10,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'gray',
+    marginTop: 20,
   },
   title: {
     fontSize: 16,

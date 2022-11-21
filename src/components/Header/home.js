@@ -23,6 +23,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: 'transparent',
+    backgroundColor: '#3366FF',
   },
 });

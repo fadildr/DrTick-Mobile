@@ -8,52 +8,20 @@ import {
   ScrollView,
 } from 'react-native';
 import Header from '../../components/Header/default';
+import axios from '../../utils/axios';
 export default function Order(props) {
   const [listBooking, setListBooking] = useState([]);
   const [count, setCount] = useState(0);
-
+  // console.log(props.route.params.eventId);
+  const id = props.route.params.eventId;
+  console.log(id);
   useEffect(() => {
     getDataBooking();
   }, []);
 
-  const getDataBooking = () => {
-    // https://www.notion.so/Modul-Booking-293a2b5a8f2b4d09a8e1f25304592c22
-    const DATADUMMY = {
-      status: 200,
-      message: 'Success Get Data Section By Event Id',
-      data: [
-        {
-          section: 'REG1-1',
-          booked: 30,
-          available: 0,
-          statusFull: true,
-        },
-        {
-          section: 'REG1-2',
-          booked: 15,
-          available: 15,
-          statusFull: false,
-        },
-        {
-          section: 'REG1-3',
-          booked: 0,
-          available: 30,
-          statusFull: false,
-        },
-        {
-          section: 'REG1-4',
-          booked: 30,
-          available: 0,
-          statusFull: true,
-        },
-        {
-          section: 'VVIP1-1',
-          booked: 5,
-          available: 5,
-          statusFull: false,
-        },
-      ],
-    };
+  const getDataBooking = async () => {
+    const DATADUMMY = await axios.get(`booking/event/${id}`);
+    console.log(DATADUMMY.data.data);
     const seat = [
       {
         type: 'VVIP',
@@ -137,7 +105,7 @@ export default function Order(props) {
     });
   };
   return (
-    <View style={{backgroundColor: 'white'}}>
+    <View style={{backgroundColor: 'white', height: '100%'}}>
       <Header {...props} />
       <View style={styles.img}>
         <Image source={require('../../assets/order.png')} />
