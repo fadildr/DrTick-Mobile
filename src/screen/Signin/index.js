@@ -151,5 +151,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     marginHorizontal: 10,
+    borderRadius: 10,
   },
 });

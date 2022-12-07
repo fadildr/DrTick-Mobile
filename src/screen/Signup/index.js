@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {TextInput, Checkbox} from 'react-native-paper';
 import axios from '../../utils/axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Signup(props) {
   const [checked, setChecked] = useState(false);
   const [form, setForm] = useState({});
@@ -26,7 +26,7 @@ export default function Signup(props) {
       props.navigation.navigate('Signin');
       // props.navigation.replace('AppScreen', {screen: 'MenuNavigator'});
     } catch (error) {
-      console.log(error.response.data);
+      alert(error.response.data.msg);
     }
   };
 

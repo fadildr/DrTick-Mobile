@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Feather';
 export default function HomeHeader(props) {
   const openDrawer = () => {
     props.navigation.openDrawer();
@@ -8,10 +8,10 @@ export default function HomeHeader(props) {
   return (
     <View style={styles.header}>
       <TouchableOpacity onPress={openDrawer}>
-        <Icon size={30} name="menuunfold" />
+        <Icon size={30} name="menu" color="white" />
       </TouchableOpacity>
       <View>
-        <Icon size={30} name="mail" />
+        <Icon size={30} name="mail" color="white" />
       </View>
     </View>
   );

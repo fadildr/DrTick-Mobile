@@ -30,6 +30,7 @@ function DrawerContent(props) {
           <View style={styles.avatar}>
             {user.data.image ? (
               <Image
+                style={styles.avatar}
                 source={{
                   uri: `https://res.cloudinary.com/dxbhfz3jn/image/upload/v1664877618/${user.data.image}`,
                 }}

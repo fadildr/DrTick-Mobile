@@ -32,7 +32,7 @@ export default function Home(props) {
   const getData = async () => {
     try {
       const result = await axios.get(
-        `event?page=1&limit=5&name=${searchName}&dateTimeShow=`,
+        `event?page=1&limit=10&name=${searchName}&dateTimeShow=`,
       );
       setData(result.data.data);
     } catch (error) {
@@ -61,12 +61,14 @@ export default function Home(props) {
         <Icon
           size={30}
           name="search1"
+          color="white"
           style={{marginTop: 5}}
           onPress={handleSearch}
         />
         <TextInput
           placeholder="Search..."
           onChangeText={text => handleChangeForm(text, 'keyword')}
+          style={{color: 'white'}}
         />
       </View>
       {/* <View> */}
@@ -91,19 +93,6 @@ export default function Home(props) {
           <Text style={styles.date}>17</Text>
           <Text style={styles.date}>Tue</Text>
         </View>
-        {/* {listDateShow.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={{margin: '0 10px'}}
-            className={index === 2 ? 'active' : ''}
-            // className="btn-date"
-            onPress={() => {
-              selectDate(moment(item).format('YYYY,MM,DD'));
-            }}>
-            <Text>{moment(item).format('DD')}</Text>
-            <Text>{moment(item).format('ddd')}</Text>
-          </TouchableOpacity>
-        ))} */}
       </View>
       <ScrollView style={styles.containerCard}>
         <Text

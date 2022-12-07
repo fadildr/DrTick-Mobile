@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+
 // import {TextInput} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/AntDesign';
 import HeaderDetail from '../../components/Header/detail';
@@ -16,10 +17,10 @@ export default function Home(props) {
   const handleBuy = () =>
     props.navigation.navigate('Order', {eventId: props.route.params.eventId});
   useEffect(() => {
-    getEventById();
+    getDetailEvent();
   }, []);
-  // const id = ;
-  const getEventById = async () => {
+
+  const getDetailEvent = async () => {
     try {
       const result = await axios.get(`event/${props.route.params.eventId}`);
       setData(result.data.data[0]);
@@ -27,7 +28,7 @@ export default function Home(props) {
       console.log(error);
     }
   };
-  console.log(data);
+
   return (
     <View>
       <HeaderDetail {...props} />

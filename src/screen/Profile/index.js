@@ -9,6 +9,7 @@ export default function Profile(props) {
       <View style={styles.avatar}>
         {user.data.image ? (
           <Image
+            style={styles.image}
             source={{
               uri: `https://res.cloudinary.com/dxbhfz3jn/image/upload/v1664877618/${user.data.image}`,
             }}
@@ -92,6 +93,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: 'gray',
     marginTop: 20,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
   title: {
     fontSize: 16,

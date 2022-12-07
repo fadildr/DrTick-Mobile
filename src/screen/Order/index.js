@@ -6,22 +6,40 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import Header from '../../components/Header/default';
+
 import axios from '../../utils/axios';
 export default function Order(props) {
   const [listBooking, setListBooking] = useState([]);
+
   const [count, setCount] = useState(0);
+  const [price, setPrice] = useState('');
+  const [dataEvent, setDataEvent] = useState([]);
+
   // console.log(props.route.params.eventId);
   const id = props.route.params.eventId;
-  console.log(id);
+  // console.log(id);
   useEffect(() => {
+    getDataEvent();
     getDataBooking();
   }, []);
-
+  const getDataEvent = async () => {
+    try {
+      const result = await axios.get(`event/${id}`);
+      // console.log(result.data.data.price);
+      setPrice(dataEvent[0]?.price);
+      setDataEvent(result.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  console.log(price);
+  // console.log(dataEvent[0].price);
   const getDataBooking = async () => {
-    const DATADUMMY = await axios.get(`booking/event/${id}`);
-    console.log(DATADUMMY.data.data);
+    const dataBooking = await axios.get(`booking/event/${id}`);
+
     const seat = [
       {
         type: 'VVIP',
@@ -36,23 +54,19 @@ export default function Order(props) {
         // DIGUNAKAN UNTUK MENCARI DATA TIAP BAGIAN
         for (let j = 1; j <= item.section; j++) {
           // DIGUNAKAN UNTUK MENCARI DATA TIAP SECTION
-          const filterSeat = DATADUMMY.data.filter(
+          const filterSeat = dataBooking.data.data.filter(
             dataSeat => dataSeat.section === `${item.type}${i}-${j}`, // VVIP1-1 === VVIP1-1
           );
-          // filterSeat = [{
-          //   section: 'VVIP1-1',
-          //   booked: 5,
-          //   available: 5,
-          //   statusFull: false,
-          // }]
+
           const checkData = data.filter(
             dataAvailable => dataAvailable.type === item.type,
           ); // DIGUNAKAN UNTUK MENCARI TAU APAKAH TYPE SUDAH MASUK KE DALAM VARIABEL DATA ?
-          // checkData = []
+
           if (checkData.length < 1) {
             // pengecekan data
             if (filterSeat.length < 1) {
               // JIKA DATA BELUM MASUK KEDALAM DATA BOOKING
+
               data.push({
                 type: item.type,
                 section: `${item.type}${i}-${j}`,
@@ -61,10 +75,12 @@ export default function Order(props) {
                   : item.type.includes('VIP')
                   ? 20
                   : 30,
+                price: dataEvent[0]?.price,
               });
             }
             if (filterSeat.length > 0 && !filterSeat[0]?.statusFull) {
               // JIKA DATA SUDAH MASUK KEDALAM DATA BOOKING
+              // console.log(filterSeat[0].available);
               data.push({
                 type: filterSeat[0].section.includes('VVIP')
                   ? 'VVIP'
@@ -73,23 +89,27 @@ export default function Order(props) {
                   : 'REG',
                 section: filterSeat[0].section,
                 available: filterSeat[0].available,
+                price: filterSeat[0].section.includes('VVIP')
+                  ? dataEvent[0]?.price * 3
+                  : item.type.includes('VIP')
+                  ? dataEvent[0]?.price * 2
+                  : dataEvent[0]?.price,
               });
             }
           }
+          // const
         }
       }
       return data;
     });
     // result = [[{type: "REG",section: "REG1-1", available: 30}], [{type: "VIP",section: "VIP1-1", available: 20}], [{type: "VVIP",section: "VVIP1-1", available: 5}]]
     const newResult = result.map(item => item[0]);
-    // newResult = [
-    //   {type: 'REG', section: 'REG1-1', available: 30},
-    //   {type: 'VIP', section: 'VIP1-1', available: 20},
-    //   {type: 'VVIP', section: 'VVIP1-1', available: 5},
-    // ];
     setListBooking(newResult);
   };
+  // const countPrice = () => {
 
+  // };
+  console.log(listBooking);
   const decrement = () => {
     setCount(function (prevCount) {
       if (prevCount > 0) {
@@ -107,6 +127,7 @@ export default function Order(props) {
   return (
     <View style={{backgroundColor: 'white', height: '100%'}}>
       <Header {...props} />
+      <View style={{width: 800}} />
       <View style={styles.img}>
         <Image source={require('../../assets/order.png')} />
       </View>
@@ -115,145 +136,78 @@ export default function Order(props) {
         <Text style={styles.priceText}>Price</Text>
       </View>
       <ScrollView>
-        <View style={styles.ticket}>
-          <Image
-            source={require('../../assets/ticket1.png')}
-            style={{width: 50, height: 50}}
-          />
-          <View style={{paddingLeft: 20}}>
-            <View style={styles.detail}>
-              <View>
-                <Text style={styles.typeTicket}>Section reg, Row 1</Text>
-                <Text style={styles.available}>12 Seats available</Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text>$15</Text>
-                <Text>/person</Text>
-              </View>
-            </View>
-            <View style={styles.sectionBottom}>
-              <Text style={{color: '#373A42', fontSize: 14}}>Quantity</Text>
-              <View style={styles.indec}>
-                <TouchableOpacity style={styles.button} onPress={decrement}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                      color: '#C1C5D0',
-                      fontSize: 20,
-                    }}>
-                    -
-                  </Text>
-                </TouchableOpacity>
-                <Text style={{color: 'black'}}>{count}</Text>
-                <TouchableOpacity style={styles.button} onPress={increment}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                      fontSize: 20,
-                      color: '#C1C5D0',
-                    }}>
-                    +
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-        <View style={styles.ticket}>
-          <Image
-            source={require('../../assets/ticket1.png')}
-            style={{width: 50, height: 50}}
-          />
-          <View style={{paddingLeft: 20}}>
-            <View style={styles.detail}>
-              <View>
-                <Text style={styles.typeTicket}>Section reg, Row 1</Text>
-                <Text style={styles.available}>12 Seats available</Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text>$15</Text>
-                <Text>/person</Text>
-              </View>
-            </View>
-            <View style={styles.sectionBottom}>
-              <Text style={{color: '#373A42', fontSize: 14}}>Quantity</Text>
-              <View style={styles.indec}>
-                <TouchableOpacity style={styles.button} onPress={decrement}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                      color: '#C1C5D0',
-                      fontSize: 20,
-                    }}>
-                    -
-                  </Text>
-                </TouchableOpacity>
-                <Text style={{color: 'black'}}>{count}</Text>
-                <TouchableOpacity style={styles.button} onPress={increment}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                      fontSize: 20,
-                      color: '#C1C5D0',
-                    }}>
-                    +
-                  </Text>
-                </TouchableOpacity>
+        <FlatList
+          // horizontal={true}
+          data={listBooking}
+          renderItem={({item, index}) => (
+            <View style={styles.ticket}>
+              <Image
+                source={
+                  item.type === 'VVIP'
+                    ? require('../../assets/ticket3.png')
+                    : item.type === 'VIP'
+                    ? require('../../assets/ticket2.png')
+                    : require('../../assets/ticket1.png')
+                }
+                style={{width: 50, height: 50}}
+              />
+              <View style={{paddingLeft: 20}}>
+                <View style={styles.detail}>
+                  <View>
+                    <Text style={styles.typeTicket}>
+                      Section {item.type}, {item.section}
+                    </Text>
+                    <Text style={styles.available}>
+                      {item.available} Seats available
+                    </Text>
+                  </View>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text>{item.price}</Text>
+                    <Text>/person</Text>
+                  </View>
+                </View>
+                <View style={styles.sectionBottom}>
+                  <Text style={{color: '#373A42', fontSize: 14}}>Quantity</Text>
+                  <View style={styles.indec}>
+                    <TouchableOpacity style={styles.button} onPress={decrement}>
+                      <Text
+                        style={{
+                          textAlign: 'center',
+                          fontWeight: 'bold',
+                          color: '#C1C5D0',
+                          fontSize: 20,
+                        }}>
+                        -
+                      </Text>
+                    </TouchableOpacity>
+                    <Text style={{color: 'black'}}>{count}</Text>
+                    <TouchableOpacity style={styles.button} onPress={increment}>
+                      <Text
+                        style={{
+                          // marginBottom: 5,
+
+                          fontWeight: 'bold',
+                          fontSize: 20,
+                          color: '#C1C5D0',
+                        }}>
+                        +
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             </View>
-          </View>
-        </View>
-        <View style={styles.ticket}>
-          <Image
-            source={require('../../assets/ticket1.png')}
-            style={{width: 50, height: 50}}
-          />
-          <View style={{paddingLeft: 20}}>
-            <View style={styles.detail}>
-              <View>
-                <Text style={styles.typeTicket}>Section reg, Row 1</Text>
-                <Text style={styles.available}>12 Seats available</Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text>$15</Text>
-                <Text>/person</Text>
-              </View>
-            </View>
-            <View style={styles.sectionBottom}>
-              <Text style={{color: '#373A42', fontSize: 14}}>Quantity</Text>
-              <View style={styles.indec}>
-                <TouchableOpacity style={styles.button} onPress={decrement}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                      color: '#C1C5D0',
-                      fontSize: 20,
-                    }}>
-                    -
-                  </Text>
-                </TouchableOpacity>
-                <Text style={{color: 'black'}}>{count}</Text>
-                <TouchableOpacity style={styles.button} onPress={increment}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                      fontSize: 20,
-                      color: '#C1C5D0',
-                    }}>
-                    +
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
+          )}
+          keyExtractor={item => item.id}
+        />
       </ScrollView>
+      <View style={styles.footer}>
+        <TouchableOpacity style={styles.checkout}>
+          <Text style={{color: 'white', fontSize: 15, fontWeight: '600'}}>
+            Checkout
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -330,5 +284,24 @@ const styles = StyleSheet.create({
     borderColor: '#C1C5D0',
     borderStyle: 'solid',
     width: 25,
+    height: 25,
+    alignItems: 'center',
+    borderRadius: 5,
+    justifyContent: 'center',
+    // paddingBottom: 4,
+  },
+  footer: {
+    flexDirection: 'row',
+    marginBottom: 50,
+    borderRadius: 10,
+    padding: 5,
+  },
+  checkout: {
+    backgroundColor: '#3366FF',
+    width: '100%',
+    height: 45,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
